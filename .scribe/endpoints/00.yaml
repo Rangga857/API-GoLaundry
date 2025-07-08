@@ -1,0 +1,918 @@
+name: Endpoints
+description: ''
+endpoints:
+  -
+    httpMethods:
+      - POST
+    uri: api/register
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Register a new user'
+      description: 'Register a user with name, email, password, and role_id.'
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      username:
+        name: username
+        description: 'Must match the regex /^[a-z]+$/i. Must not be greater than 255 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      email:
+        name: email
+        description: 'Alamat email yang unik. Contoh: john@example.com'
+        required: true
+        example: gbailey@example.net
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      password:
+        name: password
+        description: 'Kata sandi minimal 6 karakter. Contoh: rahasia123'
+        required: true
+        example: '|]|{+-'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      role_id:
+        name: role_id
+        description: 'ID dari role yang tersedia. Contoh: 2'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      username: b
+      email: gbailey@example.net
+      password: '|]|{+-'
+      role_id: 16
+    fileParameters: []
+    responses:
+      -
+        status: 201
+        content: |-
+          {
+            "status_code": 201,
+            "message": "User created successfully",
+            "data": {
+              "id": 1,
+              "name": "john",
+              "email": "john@example.com",
+              "role_id": 2
+            }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 400
+        content: |-
+          {
+            "status_code": 400,
+            "message": "The email has already been taken.",
+            "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 500
+        content: |-
+          {
+            "status_code": 500,
+            "message": "Internal server error"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - POST
+    uri: api/login
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: Login
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      email:
+        name: email
+        description: 'Alamat email pengguna. Contoh: john@example.com'
+        required: true
+        example: gbailey@example.net
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      password:
+        name: password
+        description: 'Kata sandi pengguna. Contoh: rahasia123'
+        required: true
+        example: '|]|{+-'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      email: gbailey@example.net
+      password: '|]|{+-'
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+            "message": "Login berhasil",
+            "status_code": 200,
+            "data": {
+              "id": 1,
+              "name": "john",
+              "email": "john@example.com",
+              "role": "admin",
+              "token": "eyJ0eXAiOiJKV1Qi..."
+            }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+            "message": "Email atau password salah",
+            "status_code": 401,
+            "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
+    uri: api/logout
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Logout user'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+            "message": "Logout berhasil",
+            "status_code": 200,
+            "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - POST
+    uri: api/admin/profile
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Tambah profil admin'
+      description: 'Endpoint untuk membuat profil admin. Hanya bisa dilakukan satu kali per user.'
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        name: name
+        description: 'Nama admin. Contoh: Andi'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      name: architecto
+    fileParameters: []
+    responses:
+      -
+        status: 201
+        content: |-
+          {
+            "message": "Profil admin berhasil dibuat",
+            "status_code": 201,
+            "data": {
+              "id": 1,
+              "name": "Andi"
+            }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 400
+        content: |-
+          {
+            "status_code": 400,
+            "message": "The name field is required.",
+            "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 409
+        content: |-
+          {
+            "message": "Profil admin sudah ada",
+            "status_code": 409,
+            "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 500
+        content: |-
+          {
+            "status_code": 500,
+            "message": "Internal Server Error: ...",
+            "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
+    uri: api/admin/induk
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Ambil semua data induk'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+            "message": "Data induk berhasil diambil",
+            "status_code": 200,
+            "data": [
+              {
+                "id": 1,
+                "no_ring": "RING-001",
+                "tanggal_lahir": "2024-01-15",
+                "jenis_kelamin": "jantan",
+                "jenis_kenari": "Yorkshire",
+                "keterangan": "Induk aktif",
+                "gambar_induk": "/storage/photos/induk1.jpg",
+                "created_at": "2024-01-15T12:00:00Z",
+               "updated_at": "2024-01-15T12:00:00Z"
+                   },
+              {
+               "id": 1,
+               "no_ring": "RING-001",
+               "tanggal_lahir": "2024-01-15",
+               "jenis_kelamin": "jantan",
+               "jenis_kenari": "Yorkshire",
+               "keterangan": "Induk aktif",
+               "gambar_induk": "/storage/photos/induk1.jpg",
+               "created_at": "2024-01-15T12:00:00Z",
+               "updated_at": "2024-01-15T12:00:00Z"
+           },
+          ]
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 204
+        content: |-
+          {
+           "message": "Tidak ada data induk",
+          "status_code": 204,
+          "data": []
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 500
+        content: |-
+          {
+           "status_code": 500,
+          "message": "Internal Server Error: ...",
+          "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
+    uri: 'api/admin/induk/{id}'
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Ambil detail induk'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'ID induk'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+            "message": "Detail induk berhasil diambil",
+            "status_code": 200,
+            "data": {
+              "id": 1,
+             "no_ring": "RING-001",
+            "tanggal_lahir": "2024-01-15",
+            "jenis_kelamin": "jantan",
+            "jenis_kenari": "Yorkshire",
+            "keterangan": "Induk aktif",
+           "gambar_induk": "/storage/photos/induk1.jpg",
+            "created_at": "2024-01-15T12:00:00Z",
+           "updated_at": "2024-01-15T12:00:00Z"
+           }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+            "message": "Data induk tidak ditemukan",
+            "status_code": 404,
+            "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - POST
+    uri: api/admin/induk
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Tambah data induk'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: multipart/form-data
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      no_ring:
+        name: no_ring
+        description: 'Nomor ring (opsional). Contoh: R12345'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      tanggal_lahir:
+        name: tanggal_lahir
+        description: 'Tanggal lahir induk. Contoh: 2020-01-01'
+        required: false
+        example: architecto
+        type: date
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      jenis_kelamin:
+        name: jenis_kelamin
+        description: 'Jenis kelamin (jantan/ betina). Contoh: jantan'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      jenis_kenari:
+        name: jenis_kenari
+        description: 'Jenis kenari. Contoh: Yorkshire'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      keterangan:
+        name: keterangan
+        description: 'Keterangan tambahan (opsional). Contoh: Induk sehat'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      gambar_induk:
+        name: gambar_induk
+        description: 'Gambar induk (opsional) dalam format jpeg/png/jpg.'
+        required: false
+        example: null
+        type: file
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+    cleanBodyParameters:
+      no_ring: architecto
+      tanggal_lahir: architecto
+      jenis_kelamin: architecto
+      jenis_kenari: architecto
+      keterangan: architecto
+    fileParameters:
+      gambar_induk: null
+    responses:
+      -
+        status: 201
+        content: |-
+          {
+            "message": "Data induk berhasil ditambahkan",
+            "status_code": 201,
+            "data":
+          {
+              "id": 1,
+             "no_ring": "RING-001",
+            "tanggal_lahir": "2024-01-15",
+            "jenis_kelamin": "jantan",
+            "jenis_kenari": "Yorkshire",
+            "keterangan": "Induk aktif",
+           "gambar_induk": "/storage/photos/induk1.jpg",
+            "created_at": "2024-01-15T12:00:00Z",
+           "updated_at": "2024-01-15T12:00:00Z"
+           },
+
+
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - PUT
+    uri: 'api/admin/induk/{id}'
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Perbarui data induk'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: multipart/form-data
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'ID induk'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      no_ring:
+        name: no_ring
+        description: 'Nomor ring (opsional). Contoh: R12345'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      tanggal_lahir:
+        name: tanggal_lahir
+        description: 'Tanggal lahir induk. Contoh: 2020-01-01'
+        required: false
+        example: architecto
+        type: date
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      jenis_kelamin:
+        name: jenis_kelamin
+        description: 'Jenis kelamin (jantan/ betina). Contoh: jantan'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      jenis_kenari:
+        name: jenis_kenari
+        description: 'Jenis kenari. Contoh: Yorkshire'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      keterangan:
+        name: keterangan
+        description: 'Keterangan tambahan (opsional). Contoh: Induk sehat'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      gambar_induk:
+        name: gambar_induk
+        description: 'Gambar induk (opsional) dalam format jpeg/png/jpg.'
+        required: false
+        example: null
+        type: file
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+    cleanBodyParameters:
+      no_ring: architecto
+      tanggal_lahir: architecto
+      jenis_kelamin: architecto
+      jenis_kenari: architecto
+      keterangan: architecto
+    fileParameters:
+      gambar_induk: null
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+            "message": "Data induk berhasil diperbarui",
+            "status_code": 200,
+            "data": { ... }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+            "message": "Data induk tidak ditemukan",
+            "status_code": 404,
+            "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - DELETE
+    uri: 'api/admin/induk/{id}'
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Hapus data induk'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'ID induk'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+            "message": "Data induk berhasil dihapus",
+            "status_code": 200,
+            "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+            "message": "Data induk tidak ditemukan",
+            "status_code": 404,
+            "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - POST
+    uri: api/buyer/profile
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Tambah profil pembeli'
+      description: 'Endpoint untuk membuat profil pembeli. Hanya bisa dilakukan satu kali per user.'
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: multipart/form-data
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        name: name
+        description: 'Nama pembeli. Contoh: Budi'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      address:
+        name: address
+        description: 'Alamat pembeli. Contoh: Jl. Merdeka No. 10'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      phone:
+        name: phone
+        description: 'Nomor telepon pembeli. Contoh: 08123456789'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      photo:
+        name: photo
+        description: 'Foto pengguna (JPEG/PNG/JPG/GIF). Tidak wajib.'
+        required: false
+        example: null
+        type: file
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      name: architecto
+      address: architecto
+      phone: architecto
+    fileParameters:
+      photo: null
+    responses:
+      -
+        status: 201
+        content: |-
+          {
+            "message": "Profil pembeli berhasil dibuat",
+            "status_code": 201,
+            "data": {
+              "id": 2,
+              "name": "Budi",
+              "address": "Jl. Merdeka No. 10",
+              "phone": "08123456789",
+              "photo": "/storage/photos/abc123.jpg"
+            }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 400
+        content: |-
+          {
+            "status_code": 400,
+            "message": "The phone field is required.",
+            "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 409
+        content: |-
+          {
+            "message": "Profil pembeli sudah ada",
+            "status_code": 409,
+            "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 500
+        content: |-
+          {
+            "status_code": 500,
+            "message": "Internal Server Error: ...",
+            "data": null
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
