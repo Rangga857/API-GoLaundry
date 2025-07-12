@@ -21,6 +21,11 @@ class OrdersLaundries extends Model
         'status',  
     ];
 
+     public function confirmationPayment()
+    {
+        return $this->hasOne(ConfirmationPayments::class, 'order_id', 'id');
+    }
+
     public function profile()
     {
         return $this->belongsTo(ProfilePelanggan::class, 'id_profile', 'id_profile');
