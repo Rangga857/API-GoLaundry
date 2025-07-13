@@ -15,12 +15,9 @@ use App\Http\Controllers\CommentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
-// Route Publik (Login, Register)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Route yang memerlukan autentikasi API (untuk semua user yang login)
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']); 
 });
@@ -55,6 +52,8 @@ Route::middleware(['auth:api', 'role:admin'])->group(function () {
     // Konfirmasi Pembayaran (Admin)
     Route::post('admin/confirmationpayments', [ConfirmationPaymentsController::class, 'store']);
     Route::get('admin/confirmationpayments', [ConfirmationPaymentsController::class, 'getAllConfirmationPayments']);
+    Route::get('admin/confirmationpayments/{id}', [ConfirmationPaymentsController::class, 'getConfirmationPaymentByOrderId']);
+
 
     // catergory pengeluaran (Admin)
     Route::post('admin/pengeluarancategory', [PengeluaranCategoryController::class, 'addPengeluaranCategory']);
@@ -65,6 +64,7 @@ Route::middleware(['auth:api', 'role:admin'])->group(function () {
     //pembayaran
     Route::put('admin/pembayaran/{id}/confirm', [PembayaranController::class, 'confirmPayment']); 
     Route::get('admin/pembayaran', [PembayaranController::class, 'getAllPayments']); 
+    Route::get('admin/pembayaran/{id}', [PembayaranController::class, 'getPaymentByOrderId']);
 
     Route::post('admin/pengeluaran', [PengeluaranController::class, 'addPengeluaran']);
     Route::get('admin/pengeluaran', [PengeluaranController::class, 'getAllPengeluaran']);
@@ -73,24 +73,22 @@ Route::middleware(['auth:api', 'role:admin'])->group(function () {
     Route::delete('admin/pengeluaran/{id}', [PengeluaranController::class, 'deletePengeluaran']);
 
     // Pemasukan (Admin)
-    Route::post('admin/pemasukan', [PemasukanController::class, 'addPemasukan']); // Menambah pemasukan offline
-    Route::get('admin/pemasukan', [PemasukanController::class, 'getAllPemasukan']); // Melihat semua pemasukan (offline + online terkonfirmasi)
-    Route::get('admin/pemasukan/total', [PemasukanController::class, 'getTotalPemasukan']); // Melihat total pemasukan (offline + online terkonfirmasi)
-    Route::delete('admin/pemasukan/{id}', [PemasukanController::class, 'deletePemasukan']); // Menghapus pemasukan offline
-    Route::put('admin/pemasukan/{id}', [PemasukanController::class, 'updatePemasukan']); // Memperbarui pemasukan offline
+    Route::post('admin/pemasukan', [PemasukanController::class, 'addPemasukan']); 
+    Route::get('admin/pemasukan', [PemasukanController::class, 'getAllPemasukan']); 
+    Route::get('admin/pemasukan/total', [PemasukanController::class, 'getTotalPemasukan']); 
+    Route::delete('admin/pemasukan/{id}', [PemasukanController::class, 'deletePemasukan']);
+    Route::put('admin/pemasukan/{id}', [PemasukanController::class, 'updatePemasukan']);
 
     Route::get('admin/laporanharian/pdf', [PemasukanController::class, 'exportPemasukanSummaryPdf']);
 
-    // Komentar (Admin)
      // Komentar (Admin)
-        Route::get('admin/comments', [CommentController::class, 'getAllComments']); // Admin melihat semua komentar
-        Route::get('admin/comments/{id}', [CommentController::class, 'getCommentById']); // Admin melihat komentar spesifik
+    Route::get('admin/comments/{id}', [CommentController::class, 'getCommentByOrderId']); 
 });
 
 // Grup Route untuk Pelanggan
 Route::middleware(['auth:api', 'role:pelanggan'])->group(function () {
     // Profile Pelanggan
-    Route::post('pelanggan/profile', [ProfilePelangganController::class, 'addProfilePelanggan']); // Perbaikan casing
+    Route::post('pelanggan/profile', [ProfilePelangganController::class, 'addProfilePelanggan']); 
     Route::get('pelanggan/profile', [ProfilePelangganController::class, 'getProfilePelanggan']);
     Route::put('pelanggan/profile', [ProfilePelangganController::class, 'updateProfilePelanggan']);
     
@@ -109,11 +107,13 @@ Route::middleware(['auth:api', 'role:pelanggan'])->group(function () {
 
     // Konfirmasi Pembayaran (Pelanggan bisa melihat)
     Route::get('/pelanggan/confirmationpayments', [ConfirmationPaymentsController::class, 'getConfirmationPaymentByPelanggan']);
+    Route::get('pelanggan/confirmationpayments/{orderId}', [ConfirmationPaymentsController::class, 'getConfirmationPaymentByOrderId']);
 
     //pembayaran
-    Route::post('pelanggan/pembayaran', [PembayaranController::class, 'addPayment']); // Pelanggan menambahkan pembayaran
+    Route::post('pelanggan/pembayaran', [PembayaranController::class, 'addPayment']); 
     Route::get('pelanggan/mypembayaran', [PembayaranController::class, 'getPaymentsByPelanggan']);
 
     // Komentar (Pelanggan)
     Route::post('pelanggan/comments', [CommentController::class, 'addComment']); 
+    Route::get('/pelanggan/comments', [CommentController::class, 'getMyComments']);
 });

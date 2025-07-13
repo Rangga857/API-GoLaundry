@@ -7,16 +7,28 @@ use App\Http\Requests\AddPengeluaranRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Models\PengeluaranCategory;
 
 class PengeluaranController extends Controller
 {
-    public function addPengeluaran(AddPengeluaranRequest $request)
+public function addPengeluaran(AddPengeluaranRequest $request)
     {
         try {
             Auth::user();
 
+            $categoryName = $request->nama_kategori;
+
+            $pengeluaranCategory = PengeluaranCategory::where('nama', $categoryName)->first();
+
+            if (!$pengeluaranCategory) {
+                return response()->json([
+                    'message' => 'Kategori pengeluaran "' . $categoryName . '" tidak ditemukan.',
+                    'status_code' => 404,
+                    'data' => null,
+                ], 404);
+            }
             $pengeluaran = Pengeluaran::create([
-                'pengeluaran_category_id' => $request->pengeluaran_category_id,
+                'pengeluaran_category_id' => $pengeluaranCategory->pengeluaran_category_id, 
                 'jumlah_pengeluaran' => $request->jumlah_pengeluaran,
                 'deskripsi_pengeluaran' => $request->deskripsi_pengeluaran,
             ]);
@@ -28,15 +40,19 @@ class PengeluaranController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
-            Log::error("Error adding expense: " . $e->getMessage());
+            // Log the detailed error for debugging
+            Log::error("Error adding expense: " . $e->getMessage(), [
+                'request_data' => $request->all(),
+                'exception_trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'status_code' => 500,
-                'message' => 'Internal Server Error: ' . $e->getMessage(),
+                'message' => 'Internal Server Error: Terjadi kesalahan saat menambahkan pengeluaran. Silakan coba lagi nanti.',
                 'data' => null,
             ], 500);
         }
     }
-
     public function getAllPengeluaran()
     {
         try {
@@ -125,7 +141,7 @@ class PengeluaranController extends Controller
                 'data' => [
                     'id' => $pengeluaran->id,
                     'pengeluaran_category_id' => $pengeluaran->pengeluaran_category_id,
-                    'category_name' => $pengeluaran->category->name ?? 'N/A',
+                    'nama' => $pengeluaran->category->nama,
                     'jumlah_pengeluaran' => (float) $pengeluaran->jumlah_pengeluaran,
                     'deskripsi_pengeluaran' => $pengeluaran->deskripsi_pengeluaran,
                     'created_at' => $pengeluaran->created_at,

@@ -17,7 +17,6 @@ class AddAdminRequest extends FormRequest
         return [
             'name'      => 'required|string|max:255',
             'address'   => 'required|string|max:255',
-            'photo'     => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'latitude'  => 'nullable|numeric',
             'longitude' => 'nullable|numeric', 
         ];
@@ -32,9 +31,6 @@ class AddAdminRequest extends FormRequest
             'address.required' => 'Alamat admin harus diisi.',
             'address.string' => 'Alamat admin harus berupa teks.',
             'address.max' => 'Alamat admin tidak boleh lebih dari 255 karakter.',
-            'photo.image' => 'File harus berupa gambar.',
-            'photo.mimes' => 'Format gambar yang diizinkan: jpeg, png, jpg, gif, svg.',
-            'photo.max' => 'Ukuran gambar maksimal 2MB.',
             'latitude.numeric' => 'Latitude harus berupa angka.', 
             'longitude.numeric' => 'Longitude harus berupa angka.',
         ];

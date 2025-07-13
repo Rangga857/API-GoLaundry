@@ -36,4 +36,9 @@ class ConfirmationPayments extends Model
     {
         return $this->belongsTo(OrdersLaundries::class, 'order_id', 'id');
     }
+
+     public function pembayaran()
+    {
+        return $this->hasOne(Pembayaran::class, 'confirmation_payment_id', 'id');
+    }
 }

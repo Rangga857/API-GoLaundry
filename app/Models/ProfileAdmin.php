@@ -17,7 +17,6 @@ class ProfileAdmin extends Model
         'user_id',
         'name',
         'address',
-        'profile_picture',
         'latitude',  
         'longitude',  
     ];

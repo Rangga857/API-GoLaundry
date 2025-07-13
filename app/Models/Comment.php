@@ -13,8 +13,13 @@ class Comment extends Model
 
     protected $fillable = [
         'order_id',
-        'user_id', 
-        'comment_text', 
+        'user_id',
+        'comment_text',
+        'rating', 
+    ];
+
+    protected $casts = [
+        'rating' => 'integer',
     ];
 
     public function order()

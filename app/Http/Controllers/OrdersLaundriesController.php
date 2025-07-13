@@ -55,7 +55,7 @@ class OrdersLaundriesController extends Controller
         }
     }
 
-     public function addOrder(AddOrdersLaundriesRequest $request)
+      public function addOrder(AddOrdersLaundriesRequest $request)
     {
         try {
             $user = Auth::user();
@@ -64,15 +64,15 @@ class OrdersLaundriesController extends Controller
                 return response()->json(['error' => 'Profile pelanggan tidak ditemukan. Harap buat profil terlebih dahulu.'], 404);
             }
             $incompleteOrdersCount = OrdersLaundries::where('id_profile', $profilePelanggan->id_profile)
-                                                    ->where('status', '!=', 'selesai')
-                                                    ->count();
+                                                 ->where('status', '!=', 'selesai')
+                                                 ->count();
 
             if ($incompleteOrdersCount > 0) {
                 Log::warning('User ' . $user->id . ' attempted to create a new order but has incomplete orders.');
                 return response()->json([
                     'error' => 'Anda tidak dapat membuat pesanan baru karena masih ada pesanan sebelumnya yang belum selesai.'
                 ], 403);
-            }-
+            }
 
             $jenisPewangi = JenisPewangi::where('nama', $request->jenis_pewangi_name)->first();
             if (!$jenisPewangi) {
@@ -106,28 +106,32 @@ class OrdersLaundriesController extends Controller
                 'jenis_pewangi_id' => $jenisPewangi->id,
                 'service_id' => $serviceLaundry->id,
                 'pickup_address' => $request->pickup_address,
-                'pickup_latitude' => $latitude, // Stored as numeric
-                'pickup_longitude' => $longitude, // Stored as numeric
-                'status' => 'pending', // Initial status
+                'pickup_latitude' => $latitude,
+                'pickup_longitude' => $longitude,
+                'status' => 'pending',
             ]);
+
+            // Untuk respons, kita bisa memuat ulang relasi atau langsung menggunakan objek yang sudah ada
+            // Dengan with(['jenisPewangi', 'serviceLaundry']) di bawah, kita memastikan relasi sudah dimuat
+            // sebelum mengakses properti 'nama' dan 'title'.
+            $order->load(['jenisPewangi', 'serviceLaundry']);
 
             return response()->json([
                 'success' => 'Pesanan berhasil dibuat',
                 'order' => [
                     'id' => $order->id,
-                    'id_profile' => $order->id_profile,
-                    'jenis_pewangi_id' => $order->jenis_pewangi_id,
-                    'service_id' => $order->service_id,
+                    'profile_name' => $order->profile->name, // Perlu relasi 'profile' juga dimuat jika ingin ini
                     'pickup_address' => $order->pickup_address,
+                    'jenis_pewangi_name' => $order->jenisPewangi->nama, // Menggunakan nama
+                    'service_title' => $order->serviceLaundry->title,   // Menggunakan title
+                    'status' => $order->status,
                     'pickup_latitude' => (float) $order->pickup_latitude,
                     'pickup_longitude' => (float) $order->pickup_longitude,
-                    'status' => $order->status,
                     'created_at' => $order->created_at,
                     'updated_at' => $order->updated_at,
                 ]
             ], 201);
         } catch (\Exception $e) {
-            // Log any errors that occur during the process
             Log::error("Error adding order: " . $e->getMessage());
             return response()->json([
                 'status_code' => 500,
@@ -140,24 +144,19 @@ class OrdersLaundriesController extends Controller
     public function updateOrderStatus(Request $request, $id)
     {
         $user = Auth::user();
-        // Check if the authenticated user has admin role (role_id = 1)
         if ($user->role_id !== 1) {
             return response()->json(['error' => 'Akses ditolak. Hanya admin yang dapat memperbarui status pesanan.'], 403);
         }
-
-        // Validate the incoming request for status
         $request->validate([
             'status' => 'required|string|in:pending,menuju lokasi,proses penimbangan,proses laundry,proses antar laundry,selesai',
         ]);
 
         try {
-            // Find the order by ID or throw a 404 exception
             $order = OrdersLaundries::findOrFail($id);
 
             $order->status = $request->status;
             $order->save();
 
-            // Return the updated order, ensuring numeric values are preserved
             return response()->json([
                 'success' => 'Status pesanan berhasil diperbarui',
                 'order' => [
