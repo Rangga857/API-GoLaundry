@@ -9,7 +9,7 @@ use App\Models\ProfilePelanggan;
 use App\Http\Requests\AddOrdersLaundriesRequest;
 use App\Services\GoogleMapsService;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // Pastikan ini diimpor
 use Illuminate\Support\Facades\Log;
 
 class OrdersLaundriesController extends Controller
@@ -20,7 +20,8 @@ class OrdersLaundriesController extends Controller
     {
         $this->googleMapsService = $googleMapsService;
     }
-    public function getAllOrders()
+
+    public function getAllOrders(Request $request) // Tambahkan parameter Request $request di sini
     {
         $user = Auth::user();
         if (!$user || $user->role_id !== 1) {
@@ -29,8 +30,30 @@ class OrdersLaundriesController extends Controller
         }
 
         try {
-            $orders = OrdersLaundries::with(['profile', 'jenisPewangi', 'serviceLaundry'])
-                ->get()
+            // Mulai query
+            $query = OrdersLaundries::with(['profile', 'jenisPewangi', 'serviceLaundry']);
+
+            // Tambahkan logging untuk melihat nilai statusFilter yang diterima
+            Log::info('Received statusFilter from Flutter: ' . $request->input('statusFilter'));
+            Log::info('Received searchQuery from Flutter: ' . $request->input('searchQuery'));
+
+
+            // Terapkan filter status jika ada di request
+            if ($request->has('statusFilter') && $request->input('statusFilter') !== null && $request->input('statusFilter') !== 'all') {
+                $statusFilter = $request->input('statusFilter');
+                $query->where('status', $statusFilter);
+                Log::info('Applying status filter: ' . $statusFilter);
+            }
+
+            if ($request->has('searchQuery') && $request->input('searchQuery') !== null) {
+                $searchQuery = $request->input('searchQuery');
+                $query->whereHas('profile', function ($q) use ($searchQuery) {
+                    $q->where('name', 'like', '%' . $searchQuery . '%');
+                })->orWhere('pickup_address', 'like', '%' . $searchQuery . '%');
+                Log::info('Applying search query: ' . $searchQuery);
+            }
+
+            $orders = $query->get()
                 ->map(function ($order) {
                     return [
                         'id' => $order->id,
@@ -55,7 +78,7 @@ class OrdersLaundriesController extends Controller
         }
     }
 
-      public function addOrder(AddOrdersLaundriesRequest $request)
+    public function addOrder(AddOrdersLaundriesRequest $request)
     {
         try {
             $user = Auth::user();
@@ -64,8 +87,8 @@ class OrdersLaundriesController extends Controller
                 return response()->json(['error' => 'Profile pelanggan tidak ditemukan. Harap buat profil terlebih dahulu.'], 404);
             }
             $incompleteOrdersCount = OrdersLaundries::where('id_profile', $profilePelanggan->id_profile)
-                                                 ->where('status', '!=', 'selesai')
-                                                 ->count();
+                                                    ->where('status', '!=', 'selesai')
+                                                    ->count();
 
             if ($incompleteOrdersCount > 0) {
                 Log::warning('User ' . $user->id . ' attempted to create a new order but has incomplete orders.');
@@ -111,19 +134,16 @@ class OrdersLaundriesController extends Controller
                 'status' => 'pending',
             ]);
 
-            // Untuk respons, kita bisa memuat ulang relasi atau langsung menggunakan objek yang sudah ada
-            // Dengan with(['jenisPewangi', 'serviceLaundry']) di bawah, kita memastikan relasi sudah dimuat
-            // sebelum mengakses properti 'nama' dan 'title'.
             $order->load(['jenisPewangi', 'serviceLaundry']);
 
             return response()->json([
                 'success' => 'Pesanan berhasil dibuat',
                 'order' => [
                     'id' => $order->id,
-                    'profile_name' => $order->profile->name, // Perlu relasi 'profile' juga dimuat jika ingin ini
+                    'profile_name' => $order->profile->name,
                     'pickup_address' => $order->pickup_address,
-                    'jenis_pewangi_name' => $order->jenisPewangi->nama, // Menggunakan nama
-                    'service_title' => $order->serviceLaundry->title,   // Menggunakan title
+                    'jenis_pewangi_name' => $order->jenisPewangi->nama,
+                    'service_title' => $order->serviceLaundry->title,
                     'status' => $order->status,
                     'pickup_latitude' => (float) $order->pickup_latitude,
                     'pickup_longitude' => (float) $order->pickup_longitude,
@@ -188,7 +208,6 @@ class OrdersLaundriesController extends Controller
     public function getOrdersByProfile(Request $request, $id = null)
     {
         $user = Auth::user();
-        // Find the customer profile associated with the authenticated user
         $profilePelanggan = ProfilePelanggan::where('user_id', $user->user_id)->first();
 
         if (!$profilePelanggan) {
@@ -197,12 +216,10 @@ class OrdersLaundriesController extends Controller
 
         try {
             if ($id) {
-                // Retrieve a specific order for the authenticated user's profile
                 $order = OrdersLaundries::with(['profile', 'jenisPewangi', 'serviceLaundry'])
                                         ->where('id_profile', $profilePelanggan->id_profile)
                                         ->findOrFail($id);
 
-                // Map the single order data, ensuring numeric fields are cast to float
                 $mappedOrder = [
                     'id' => $order->id,
                     'profile_name' => $order->profile->name,
@@ -216,12 +233,10 @@ class OrdersLaundriesController extends Controller
 
                 return response()->json(['order' => $mappedOrder]);
             } else {
-                // Retrieve all orders for the authenticated user's profile
                 $orders = OrdersLaundries::with(['profile', 'jenisPewangi', 'serviceLaundry'])
                                         ->where('id_profile', $profilePelanggan->id_profile)
                                         ->get()
                                         ->map(function ($order) {
-                                            // Map each order data, ensuring numeric fields are cast to float
                                             return [
                                                 'id' => $order->id,
                                                 'profile_name' => $order->profile->name,
@@ -253,11 +268,9 @@ class OrdersLaundriesController extends Controller
         $user = Auth::user();
 
         try {
-            // Find the specific order with its relationships
             $order = OrdersLaundries::with(['profile', 'jenisPewangi', 'serviceLaundry'])
                                     ->findOrFail($id);
 
-            // Map the order data, ensuring numeric fields are cast to float
             $mappedOrder = [
                 'id' => $order->id,
                 'profile_name' => $order->profile->name,
